@@ -1,6 +1,9 @@
 "use server"
 import { redirect } from "next/navigation"
 import { cookies, headers } from "next/headers"
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies"
+
+
 
 
 
@@ -43,7 +46,7 @@ export const logout = async  () => {
     cookieStore.delete("sessionId")
 }
 
-export const authenticate = async ({token}) => {
+export const authenticate = async ({token}: {token: RequestCookie}) => {
     const cookieStore = await cookies()
     if(token){
         const authRoute = `${baseAPIUrl}/authentication/session/new?api_key=${moviedb_key}&request_token=${token.value}`

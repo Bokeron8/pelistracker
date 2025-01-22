@@ -1,10 +1,10 @@
 "use client"
 
-import { addWatch } from "../login/lib/tmdb"
+import { addWatch, Result } from "../login/lib/tmdb"
 
 
 const mediaPath = "https://image.tmdb.org/t/p/w200/"
-export default function MediaList({media}){
+export default function MediaList({media}: {media: Result[]}){
 
     return (
     <div className="grid grid-cols-1 gap-2 max-w-[80%] mt-2">

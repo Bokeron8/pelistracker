@@ -1,7 +1,34 @@
-
 "use server"
 import { isLoggedIn } from "./auth";
 
+export interface MultiResult {
+    page: number
+    results: Result[]
+    total_pages: number
+    total_results: number
+  }
+  
+  export interface Result {
+    backdrop_path: string
+    id: number
+    name?: string
+    original_name?: string
+    overview: string
+    poster_path: string
+    media_type: "tv" | "movie" | "person"
+    adult: boolean
+    original_language: string
+    genre_ids: number[]
+    popularity: number
+    first_air_date?: string
+    vote_average: number
+    vote_count: number
+    origin_country?: string[]
+    title?: string
+    original_title?: string
+    release_date?: string
+    video?: boolean
+  }
 
 const baseAPIUrl = "https://api.themoviedb.org/3"
 const moviedb_key = process.env.AUTH_TMDB_SECRET
@@ -22,7 +49,7 @@ async function accountMovieWatchlist(){
     return json
 }
 
-export async function searchMulti({query}){
+export async function searchMulti({query}: {query: string}): Promise<MultiResult>{
     const {id, username, session_id} = await getAccountInfo()
     const url = `${baseAPIUrl}/search/multi?query=${query}&api_key=${moviedb_key}&session_id=${session_id}&include_adult=false&language=es-MX&page=1`;
     
@@ -35,8 +62,8 @@ export async function searchMulti({query}){
 
     const data = await fetch(url, options)
     const json = await data.json()
-    console.log(json.results)
-    return json.results
+    
+    return json
 }
 export async function addWatch({media_type, media_id, add}: {media_type: "tv" | "movie" | "person", media_id: number, add: boolean}){
     const {id, username, session_id} = await getAccountInfo()
@@ -85,11 +112,11 @@ export async function watchListSeries({language = "es-MX", page = 1, sort_by="cr
 }
 
 export async function getAccountInfo(){
-    var session_id = await isLoggedIn()
-    if(!session_id){
+    const session = await isLoggedIn()
+    if(!session){
         return {id: null, username: null, session_id: null}
     }
-    session_id = session_id.value
+    const session_id = session.value
     const url = `${baseAPIUrl}/account?api_key=${moviedb_key}&session_id=${session_id}`
     const data = await fetch(url)
     const {success, id, username, status_message}:{success: boolean, id: number, username: string, status_message: string} = await data.json()

@@ -25,7 +25,7 @@ type MediaCategory = {
     media_type: "tv" | "movie" | "person";
 };
 
-export default function MediaList({media, setMedia}: {media: MediaCategory}){
+export default function MediaList({media, setMedia}: {media: MediaCategory, setMedia: React.Dispatch<React.SetStateAction<Media[]>>}){
     const removeWatch = async (id: number) => {
         setMedia(media.media.filter(movie => movie.id != id))
         await addWatch({media_type: media.media_type, media_id:id, add:false})
