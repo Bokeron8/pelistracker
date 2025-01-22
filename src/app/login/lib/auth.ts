@@ -3,6 +3,10 @@ import { redirect } from "next/navigation"
 import { cookies, headers } from "next/headers"
 
 
+
+const baseAPIUrl = "https://api.themoviedb.org/3"
+const moviedb_key = process.env.AUTH_TMDB_SECRET
+
 type responseToken = {
     success: boolean, expires_at: string, request_token: string
 }
@@ -24,13 +28,12 @@ export const logout = async  () => {
     const cookieStore = await cookies()
     const token = cookieStore.get('token')
 
-    const url = 'https://api.themoviedb.org/3/authentication/session';
+    const url = `${baseAPIUrl}/authentication/session?api_key=${moviedb_key}`;
     const options = {
         method: 'DELETE',
         headers: {
             accept: 'application/json',
             'content-type': 'application/json',
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4NmE4NGE2YmZkMjU4NzU4YWU2NTg1MDVhYWViZmM4YSIsIm5iZiI6MTczNjc3NTA2NC44MjA5OTk5LCJzdWIiOiI2Nzg1MTU5OGM4MWFjYWE2M2RiYzA1MjQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.pKv3cNHvuvheHOY_2SgJS1UqN5LRoM_XfWB2W8mXVlw'
         },
         body: JSON.stringify({session_id: token})
     };
@@ -43,7 +46,7 @@ export const logout = async  () => {
 export const authenticate = async ({token}) => {
     const cookieStore = await cookies()
     if(token){
-        const authRoute = `https://api.themoviedb.org/3/authentication/session/new?api_key=86a84a6bfd258758ae658505aaebfc8a&request_token=${token.value}`
+        const authRoute = `${baseAPIUrl}/authentication/session/new?api_key=${moviedb_key}&request_token=${token.value}`
         const data = await fetch(authRoute)
         const json = await data.json()
         console.log(json)
@@ -62,13 +65,12 @@ export const isLoggedIn = async () => {
 }
 
 async function createRequestToken(): Promise<responseToken>{
-    const url = 'https://api.themoviedb.org/3/authentication/token/new';
+    const url = `${baseAPIUrl}/authentication/token/new?api_key=${moviedb_key}`;
     const options = {
     method: 'GET',
     headers: {
         accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4NmE4NGE2YmZkMjU4NzU4YWU2NTg1MDVhYWViZmM4YSIsIm5iZiI6MTczNjc3NTA2NC44MjA5OTk5LCJzdWIiOiI2Nzg1MTU5OGM4MWFjYWE2M2RiYzA1MjQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.pKv3cNHvuvheHOY_2SgJS1UqN5LRoM_XfWB2W8mXVlw'
-    }
+        }
     };
 
     const data = await fetch(url, options)
