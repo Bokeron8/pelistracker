@@ -53,11 +53,14 @@ export const authenticate = async ({token}: {token: RequestCookie}) => {
 
     const authRoute = `${baseAPIUrl}/authentication/session/new?api_key=${moviedb_key}&request_token=${token.value}`
     const options = {
-        method: 'GET',
+        method: 'POST',
         headers: {
             accept: 'application/json',
+            'content-type': 'application/json',
             Authorization: `Bearer ${token_auth}`
-        }
+        
+        },
+        body: JSON.stringify({request_token: token.value})
     };
     const data = await fetch(authRoute, options)
     const json = await data.json()

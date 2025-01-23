@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { isLoggedIn } from "./app/login/lib/auth";
 import { cookies } from "next/headers";
-
+import { authenticate } from "./app/login/lib/auth";
 
 const protectedRoutes = ["/vistos"]
 
@@ -14,7 +14,7 @@ export default async function middleware(request: NextRequest) {
     const token = cookieStore.get("token");
     
     if (token) {
-        //await authenticate({ token });
+        await authenticate({ token });
         cookieStore.delete("token");
     }
 
