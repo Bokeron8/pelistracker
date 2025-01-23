@@ -1,10 +1,7 @@
-"use server"
+'use server'
+
 import { redirect } from "next/navigation"
 import { cookies, headers } from "next/headers"
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies"
-
-
-
 
 
 const baseAPIUrl = "https://api.themoviedb.org/3"
@@ -23,7 +20,7 @@ export const  login = async () => {
     if(token.success){
         const cookieStore = await cookies()
         cookieStore.set('token', token.request_token)
-        redirect(`${authUrl}${token.request_token}?redirect_to=${domain}`)
+        redirect(`${authUrl}${token.request_token}?redirect_to=${domain}/success`)
     }
     return token
 }
@@ -48,19 +45,23 @@ export const logout = async  () => {
     cookieStore.delete("sessionId")
 }
 
-export const authenticate = async ({token}: {token: RequestCookie}) => {
+export const authenticate = async () => {
     const cookieStore = await cookies()
-
-    const authRoute = `${baseAPIUrl}/authentication/session/new?request_token=${token.value}`
-    const options = {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token_auth}`
-        }
-    };
-    const data = await fetch(authRoute, options)
-    const json = await data.json()
-    cookieStore.set('sessionId', json.session_id)
+    const token = cookieStore.get("token");
+    if(token){
+        cookieStore.delete("token");
+        const authRoute = `${baseAPIUrl}/authentication/session/new?request_token=${token.value}`
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token_auth}`
+            }
+        };
+        const data = await fetch(authRoute, options)
+        const json = await data.json()
+        cookieStore.set('sessionId', json.session_id)
+    }
+    redirect('/')
 }
 
 export const isLoggedIn = async () => {

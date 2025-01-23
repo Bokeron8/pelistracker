@@ -9,14 +9,8 @@ const protectedRoutes = ["/vistos"]
 export default async function middleware(request: NextRequest) {
 
     const sessionId = await isLoggedIn();
-    const cookieStore = await cookies();
     
-    const token = cookieStore.get("token");
-    
-    if (token) {
-        await authenticate({ token });
-        cookieStore.delete("token");
-    }
+   
 
     const { pathname } = request.nextUrl;
     const isProtected = protectedRoutes.some((route) => pathname.startsWith(route)) || pathname === "/";
