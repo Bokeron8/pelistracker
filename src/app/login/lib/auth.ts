@@ -50,20 +50,20 @@ export const logout = async  () => {
 
 export const authenticate = async ({token}: {token: RequestCookie}) => {
     const cookieStore = await cookies()
-    if(token){
-        const authRoute = `${baseAPIUrl}/authentication/session/new?api_key=${moviedb_key}&request_token=${token.value}`
-        const options = {
-            method: 'GET',
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token_auth}`
-            }
-        };
-        const data = await fetch(authRoute, options)
-        const json = await data.json()
-        console.log(json)
-        cookieStore.set('sessionId', json.session_id)
-    }
+
+    const authRoute = `${baseAPIUrl}/authentication/session/new?api_key=${moviedb_key}&request_token=${token.value}`
+    const options = {
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token_auth}`
+        }
+    };
+    const data = await fetch(authRoute, options)
+    const json = await data.json()
+    console.log(json)
+    cookieStore.set('sessionId', json.session_id)
+    
 }
 
 export const isLoggedIn = async () => {
