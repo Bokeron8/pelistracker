@@ -55,8 +55,6 @@ export const authenticate = async ({token}: {token: RequestCookie}) => {
     const options = {
         method: 'POST',
         headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
             Authorization: `Bearer ${token_auth}`
         }
     };
