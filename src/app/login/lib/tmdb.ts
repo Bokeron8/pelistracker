@@ -124,7 +124,7 @@ export async function watchListMovies(): Promise<IWatchListResult>{
         }
     };
     const data = await fetch(url, options)
-    const json = await data.json()
+    const json = await data.json() as IWatchListResult
     json.results = json.results.map((item: any) => ({
         ...item,
         media_type: 'movie', // O 'tv' o 'person'
@@ -143,12 +143,12 @@ export async function watchListSeries({language = "es-MX", page = 1, sort_by="cr
         }
     };
     const data = await fetch(url, options)
-    const json = await data.json()
+    const json = await data.json() as IWatchListResult
     json.results = json.results.map((item: any) => ({
         ...item,
         media_type: 'tv', // O 'tv' o 'person'
       }));
-    return json
+    return json 
 }
 
 export async function getAccountInfo(){
