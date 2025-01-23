@@ -9,6 +9,7 @@ import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies"
 
 const baseAPIUrl = "https://api.themoviedb.org/3"
 const moviedb_key = process.env.AUTH_TMDB_SECRET
+const token_auth = process.env.TOKEN_AUTHORIZATION
 
 type responseToken = {
     success: boolean, expires_at: string, request_token: string
@@ -37,6 +38,7 @@ export const logout = async  () => {
         headers: {
             accept: 'application/json',
             'content-type': 'application/json',
+            Authorization: `Bearer ${token_auth}`
         },
         body: JSON.stringify({session_id: token})
     };
@@ -70,9 +72,10 @@ export const isLoggedIn = async () => {
 async function createRequestToken(): Promise<responseToken>{
     const url = `${baseAPIUrl}/authentication/token/new?api_key=${moviedb_key}`;
     const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${token_auth}`
         }
     };
 

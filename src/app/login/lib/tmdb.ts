@@ -1,6 +1,8 @@
 "use server"
 import { isLoggedIn } from "./auth";
 
+const token_auth = process.env.TOKEN_AUTHORIZATION
+
 export interface MultiResult {
     page: number
     results: Result[]
@@ -82,6 +84,7 @@ export async function searchMulti({query}: {query: string}): Promise<MultiResult
     const options = {
         method: 'GET',
         headers: {
+            Authorization: `Bearer ${token_auth}`,
             accept: 'application/json'
         }
     };
@@ -99,6 +102,7 @@ export async function addWatch({media_type, media_id, add}: {media_type: "tv" | 
     const options = {
         method: 'POST',
         headers: {
+            Authorization: `Bearer ${token_auth}`,
             accept: 'application/json',
             'content-type': 'application/json'
         },
@@ -115,6 +119,7 @@ export async function watchListMovies(): Promise<IWatchListResult>{
     const options = {
         method: 'GET',
         headers: {
+            Authorization: `Bearer ${token_auth}`,
             accept: 'application/json'
         }
     };
@@ -129,6 +134,7 @@ export async function watchListSeries({language = "es-MX", page = 1, sort_by="cr
     const options = {
         method: 'GET',
         headers: {
+            Authorization: `Bearer ${token_auth}`,
             accept: 'application/json'
         }
     };
@@ -144,12 +150,20 @@ export async function getAccountInfo(){
     }
     const session_id = session.value
     const url = `${baseAPIUrl}/account?api_key=${moviedb_key}&session_id=${session_id}`
-    const data = await fetch(url)
+    const options = {
+        method: 'GET',
+        headers: {
+            Authorization: `Bearer ${token_auth}`,
+            accept: 'application/json'
+        }
+    };
+    const data = await fetch(url, options)
     const {success, id, username}:{success: boolean, id: number, username: string, status_message: string} = await data.json()
     if(success == false){
         return {}
     }
     else{
+        console.log(id)
         return {id, username, session_id}
     }
 }
