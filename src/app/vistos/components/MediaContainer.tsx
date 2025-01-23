@@ -1,22 +1,13 @@
 "use client"
 
 import { useState } from "react";
+import { TWatchResult } from "@/app/login/lib/tmdb";
 import MediaList from "./MediaList";
 
-type Media = {
-  title: string;
-  poster_path: string;
-  overview: string;
-  name: string;
-  release_date: string;
-  first_air_date: string;
-  id: number;
-};
 
 type MediaCategory = {
   name: string;
-  media: Media[];
-  quantity: number;
+  media: TWatchResult[];
   media_type: "tv" | "movie" | "person";
 };
 
@@ -32,7 +23,7 @@ export default function MediaContainer({
     setMediaIdx(idx);
   };
 
-  const changeMedia = (media: Media[]) => {
+  const changeMedia = (media: TWatchResult[]) => {
     const updatedMedias = [...localMedias];
     updatedMedias[mediaIdx].media = media;
     setLocalMedias(updatedMedias);

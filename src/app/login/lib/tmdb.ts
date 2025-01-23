@@ -28,29 +28,55 @@ export interface MultiResult {
     original_title?: string
     release_date?: string
     video?: boolean
+}
+
+export interface IWatchListResult {
+    page: number
+    results: TWatchResult[]
+    total_pages: number
+    total_results: number
+}
+  
+// Interfaz base con las propiedades comunes
+export interface IWatchResultBase {
+    adult: boolean;
+    backdrop_path: string;
+    genre_ids: number[];
+    id: number;
+    original_language: string;
+    overview: string;
+    popularity: number;
+    poster_path: string;
+    vote_average: number;
+    vote_count: number;
   }
+  
+  // Interfaz para películas, extendiendo la base
+  export interface IWatchMovieResult extends IWatchResultBase {
+    media_type: 'movie';
+    original_title: string;
+    release_date: string;
+    title: string;
+    video: boolean;
+  }
+  
+  // Interfaz para series de TV, extendiendo la base
+  export interface IWatchTvResult extends IWatchResultBase {
+    media_type: 'tv';
+    origin_country: string[];
+    original_name: string;
+    first_air_date: string;
+    name: string;
+  }
+  
+export type TWatchResult = IWatchMovieResult | IWatchTvResult
 
 const baseAPIUrl = "https://api.themoviedb.org/3"
 const moviedb_key = process.env.AUTH_TMDB_SECRET
 
-async function accountMovieWatchlist(){
-    const {id, username, session_id} = await getAccountInfo()
-    const url = `${baseAPIUrl}/account/${id}/watchlist/tv?api_key=${moviedb_key}&language=es-MX&page=1&session_id=${session_id}&sort_by=created_at.asc`;
-    const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        }
-    };
-
-    const data = await fetch(url, options)
-    const json = await data.json()
-
-    return json
-}
 
 export async function searchMulti({query}: {query: string}): Promise<MultiResult>{
-    const {id, username, session_id} = await getAccountInfo()
+    const {session_id} = await getAccountInfo()
     const url = `${baseAPIUrl}/search/multi?query=${query}&api_key=${moviedb_key}&session_id=${session_id}&include_adult=false&language=es-MX&page=1`;
     
     const options = {
@@ -66,7 +92,7 @@ export async function searchMulti({query}: {query: string}): Promise<MultiResult
     return json
 }
 export async function addWatch({media_type, media_id, add}: {media_type: "tv" | "movie" | "person", media_id: number, add: boolean}){
-    const {id, username, session_id} = await getAccountInfo()
+    const {id, session_id} = await getAccountInfo()
 
     const url = `${baseAPIUrl}/account/${id}/watchlist?api_key=${moviedb_key}&session_id=${session_id}`;
 
@@ -83,8 +109,8 @@ export async function addWatch({media_type, media_id, add}: {media_type: "tv" | 
     const json = await data.json()
     console.log(json)
 }
-export async function watchListMovies(){
-    const {id, username, session_id} = await getAccountInfo()
+export async function watchListMovies(): Promise<IWatchListResult>{
+    const {id, session_id} = await getAccountInfo()
     const url = `${baseAPIUrl}/account/${id}/watchlist/movies?api_key=${moviedb_key}&language=es-MX&page=1&session_id=${session_id}&sort_by=created_at.asc`;
     const options = {
         method: 'GET',
@@ -94,11 +120,11 @@ export async function watchListMovies(){
     };
     const data = await fetch(url, options)
     const json = await data.json()
-    return json.results
+    return json
 }
 
-export async function watchListSeries({language = "es-MX", page = 1, sort_by="created_at.asc"}: {language?: string, page?: number, sort_by?: string}){
-    const {id, username, session_id} = await getAccountInfo()
+export async function watchListSeries({language = "es-MX", page = 1, sort_by="created_at.asc"}: {language?: string, page?: number, sort_by?: string}): Promise<IWatchListResult>{
+    const {id, session_id} = await getAccountInfo()
     const url = `${baseAPIUrl}/account/${id}/watchlist/tv?api_key=${moviedb_key}&language=${language}&page=${page}&session_id=${session_id}&sort_by=${sort_by}`;
     const options = {
         method: 'GET',
@@ -108,7 +134,7 @@ export async function watchListSeries({language = "es-MX", page = 1, sort_by="cr
     };
     const data = await fetch(url, options)
     const json = await data.json()
-    return json.results
+    return json
 }
 
 export async function getAccountInfo(){
@@ -119,7 +145,7 @@ export async function getAccountInfo(){
     const session_id = session.value
     const url = `${baseAPIUrl}/account?api_key=${moviedb_key}&session_id=${session_id}`
     const data = await fetch(url)
-    const {success, id, username, status_message}:{success: boolean, id: number, username: string, status_message: string} = await data.json()
+    const {success, id, username}:{success: boolean, id: number, username: string, status_message: string} = await data.json()
     if(success == false){
         return {}
     }
